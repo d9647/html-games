@@ -473,12 +473,8 @@
     </div>
 
     <script>
-        // API key should be set as an environment variable in Replit
-        // Go to Replit Secrets and add: OPENROUTER_API_KEY
-        const API_KEY = typeof process !== 'undefined' && process.env?.OPENROUTER_API_KEY
-            ? process.env.OPENROUTER_API_KEY
-            : prompt('Please enter your OpenRouter API key:');
-        const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+        // API calls now go through the backend server which securely handles the API key
+        const API_URL = '/api/chat';
 
         let gameState = {
             companyName: '',
@@ -605,10 +601,7 @@ ${randomSeed}`;
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'HTTP-Referer': window.location.href,
-                        'X-Title': 'AI Prompt Reversal Game'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         model: 'mistralai/devstral-2512:free',
@@ -710,10 +703,7 @@ Use the full 1–100 range when appropriate. Do not cluster scores.`;
                 const apiResponse = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'HTTP-Referer': window.location.href,
-                        'X-Title': 'AI Prompt Reversal Game'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         model: 'mistralai/devstral-2512:free',

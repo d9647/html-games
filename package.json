@@ -1,0 +1,16 @@
+{
+  "name": "ai-prompt-reversal-game",
+  "version": "1.0.0",
+  "description": "AI Prompt Reversal Game - The tables have turned. AI will prompt YOU.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["game", "ai", "interactive"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
+  }
+}
