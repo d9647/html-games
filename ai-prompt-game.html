@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Reversal - You Answer AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #00ff88;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .setup-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .setup-container {
+            background: rgba(15, 20, 40, 0.9);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #00ff88;
+            color: #0a0e27;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #00cc6a;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .game-screen {
+            display: none;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(15, 20, 40, 0.9);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .company-name {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .stars {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .star {
+            font-size: 1.5em;
+            color: #333;
+            position: relative;
+            display: inline-block;
+        }
+
+        .star-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            color: #ffd700;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .request-area {
+            background: rgba(15, 20, 40, 0.9);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .client-info {
+            flex: 1;
+        }
+
+        .client-name {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .client-email {
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        .request-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .difficulty-badge {
+            background: linear-gradient(135deg, #ff6b00 0%, #ff0000 100%);
+            color: white;
+        }
+
+        .reward-badge {
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            color: #0a0e27;
+        }
+
+        .request-content {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            min-height: 100px;
+            line-height: 1.6;
+        }
+
+        .response-area {
+            margin: 20px 0;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+        }
+
+        .deny-btn {
+            background: #ff4444;
+        }
+
+        .deny-btn:hover {
+            background: #cc0000;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .shop-area, .history-area {
+            background: rgba(15, 20, 40, 0.9);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #00ff88;
+            padding-bottom: 10px;
+        }
+
+        .shop-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shop-item-info {
+            flex: 1;
+        }
+
+        .shop-item-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .shop-item-desc {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        .shop-item button {
+            width: auto;
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+
+        .history-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .history-rating {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+        }
+
+        .feedback {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            animation: fadeIn 0.5s;
+        }
+
+        .feedback-rating {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .xp-gain {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            height: 20px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .active-perks {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 5px;
+        }
+
+        .perk-indicator {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(0, 255, 136, 0.3);
+            border-radius: 3px;
+            margin: 2px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-screen" id="setupScreen">
+        <div class="setup-container">
+            <h1>⚡ AI PROMPT REVERSAL ⚡</h1>
+            <p style="text-align: center; margin-bottom: 30px; opacity: 0.8;">
+                The tables have turned. AI will prompt YOU.
+            </p>
+            <div class="input-group">
+                <label for="companyName">Enter Your AI Company Name:</label>
+                <input type="text" id="companyName" placeholder="e.g., NeuroTech Solutions" autocomplete="off">
+            </div>
+            <button onclick="startGame()">START GAME</button>
+        </div>
+    </div>
+
+    <div class="game-screen" id="gameScreen">
+        <div class="header">
+            <div class="company-name" id="displayCompanyName"></div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">LEVEL</div>
+                    <div class="stat-value" id="levelDisplay">1</div>
+                    <div class="progress-bar" style="width: 150px;">
+                        <div class="progress-fill" id="xpBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">REPUTATION</div>
+                    <div class="stars" id="starsDisplay"></div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">BALANCE</div>
+                    <div class="stat-value">$<span id="moneyDisplay">0</span></div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">REQUESTS</div>
+                    <div class="stat-value" id="requestsDisplay">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="request-area">
+                <div id="requestContent">
+                    <div class="loading">⚡ Generating your first request...</div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="shop-area">
+                    <div class="section-title">🛒 SHOP</div>
+                    <div id="shopItems"></div>
+                </div>
+                <div class="history-area">
+                    <div class="section-title">📊 RECENT HISTORY</div>
+                    <div id="historyItems">
+                        <div style="opacity: 0.5; text-align: center;">No requests completed yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API key should be set as an environment variable in Replit
+        // Go to Replit Secrets and add: OPENROUTER_API_KEY
+        const API_KEY = typeof process !== 'undefined' && process.env?.OPENROUTER_API_KEY
+            ? process.env.OPENROUTER_API_KEY
+            : prompt('Please enter your OpenRouter API key:');
+        const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+        let gameState = {
+            companyName: '',
+            level: 1,
+            xp: 0,
+            xpNeeded: 100,
+            money: 0,
+            reputation: 0,
+            totalRatings: 0,
+            requestsCompleted: 0,
+            averageDifficulty: 10,
+            gradingHarshness: 0,
+            currentRequest: null,
+            history: [],
+            perks: {
+                qualityBoost: 0,
+                difficultyBonus: 0,
+                payMultiplier: 1
+            }
+        };
+
+        const shopItems = [
+            { id: 'quality1', name: 'Rating Boost I', desc: '+5 to all ratings', cost: 500, effect: () => gameState.perks.qualityBoost += 5 },
+            { id: 'quality2', name: 'Rating Boost II', desc: '+10 to all ratings', cost: 2000, effect: () => gameState.perks.qualityBoost += 10 },
+            { id: 'difficulty1', name: 'Difficulty Bonus I', desc: '+10% XP from difficulty', cost: 800, effect: () => gameState.perks.difficultyBonus += 10 },
+            { id: 'difficulty2', name: 'Difficulty Bonus II', desc: '+25% XP from difficulty', cost: 3000, effect: () => gameState.perks.difficultyBonus += 25 },
+            { id: 'pay1', name: 'Pay Multiplier I', desc: '1.5x money earned', cost: 1000, effect: () => gameState.perks.payMultiplier *= 1.5 },
+            { id: 'pay2', name: 'Pay Multiplier II', desc: '2x money earned', cost: 4000, effect: () => gameState.perks.payMultiplier *= 2 }
+        ];
+
+        let purchasedItems = new Set();
+
+        function startGame() {
+            const companyName = document.getElementById('companyName').value.trim();
+            if (!companyName) {
+                alert('Please enter a company name!');
+                return;
+            }
+            
+            gameState.companyName = companyName;
+            document.getElementById('displayCompanyName').textContent = companyName;
+            document.getElementById('setupScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            
+            updateUI();
+            renderShop();
+            generateRequest();
+        }
+
+        function updateUI() {
+            document.getElementById('levelDisplay').textContent = gameState.level;
+            document.getElementById('moneyDisplay').textContent = gameState.money.toFixed(0);
+            document.getElementById('requestsDisplay').textContent = gameState.requestsCompleted;
+            
+            const xpPercent = (gameState.xp / gameState.xpNeeded) * 100;
+            document.getElementById('xpBar').style.width = xpPercent + '%';
+            
+            updateStars();
+            updateHistory();
+        }
+
+        function updateStars() {
+            const avgRating = gameState.totalRatings > 0 ? gameState.reputation / gameState.totalRatings : 0;
+            const percent = (avgRating / 100) * 100;
+            
+            let starsHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const starPercent = Math.max(0, Math.min(100, (percent - i * 20) * 5));
+                starsHTML += `
+                    <div class="star">
+                        ★
+                        <div class="star-fill" style="width: ${starPercent}%">★</div>
+                    </div>
+                `;
+            }
+            document.getElementById('starsDisplay').innerHTML = starsHTML;
+        }
+
+        function generateClientName() {
+            const firstNames = ['Alex', 'Jordan', 'Casey', 'Morgan', 'Riley', 'Avery', 'Quinn', 'Skyler', 'Taylor', 'Cameron'];
+            const lastNames = ['Chen', 'Patel', 'Johnson', 'Garcia', 'Kim', 'Martinez', 'Anderson', 'Williams', 'Brown', 'Davis'];
+            const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+            const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+            return `${firstName} ${lastName}`;
+        }
+
+        function generateEmail(name) {
+            const domains = ['techcorp.com', 'innovate.io', 'digitalventures.net', 'futuretech.ai', 'nexusgroup.com'];
+            const emailName = name.toLowerCase().replace(' ', '.');
+            return `${emailName}@${domains[Math.floor(Math.random() * domains.length)]}`;
+        }
+
+        async function generateRequest() {
+            document.getElementById('requestContent').innerHTML = '<div class="loading">⚡ AI is generating a request for you...</div>';
+            
+            const difficulty = Math.min(100, Math.max(1, Math.floor(gameState.averageDifficulty + (Math.random() * 30 - 15))));
+            const reward = Math.floor(difficulty * 10 * (1 + Math.random() * 0.5));
+            
+            const clientName = generateClientName();
+            const clientEmail = generateEmail(clientName);
+            
+            const contextInfo = gameState.requestsCompleted > 0 
+                ? `The company has completed ${gameState.requestsCompleted} requests with an average rating of ${(gameState.reputation / gameState.totalRatings).toFixed(1)}/100. Level: ${gameState.level}.` 
+                : 'This is a new AI company just starting out.';
+            
+            const randomSeed = Math.random().toString(36).substring(7);
+            
+            const prompt = `You are a real person named "${clientName}" (${clientEmail}) writing one short question to an AI company called "${gameState.companyName}".
+
+Your request difficulty is ${difficulty}/100.
+Pick any topic that fits this difficulty - The lower the difficulty, the easier the question:
+
+Rules:
+- One short question only
+- Sound human (rushed and slightly misspelled - no special characters, only basic punctuation)
+- Be specific about the problem or goal
+- Keep it appropriate and nice
+Only write your question, leave nothing else in. Be STRAIGHT and TO THE POINT!
+
+Seed:
+${randomSeed}`;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'AI Prompt Reversal Game'
+                    },
+                    body: JSON.stringify({
+                        model: 'mistralai/devstral-2512:free',
+                        messages: [
+                            { role: 'user', content: prompt }],
+                        temperature: 0.9,
+                        top_p: 0.95,
+                        max_tokens: 200
+                    })
+                });
+
+                const data = await response.json();
+                const requestText = data.choices[0].message.content.trim();
+
+                gameState.currentRequest = {
+                    clientName,
+                    clientEmail,
+                    difficulty,
+                    reward,
+                    text: requestText
+                };
+
+                displayRequest();
+            } catch (error) {
+                console.error('Error generating request:', error);
+                document.getElementById('requestContent').innerHTML = `
+                    <div style="color: #ff4444; text-align: center; padding: 20px;">
+                        ⚠️ Error generating request. Please check your API configuration.<br>
+                        <button onclick="generateRequest()" style="margin-top: 10px;">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function displayRequest() {
+            const req = gameState.currentRequest;
+            document.getElementById('requestContent').innerHTML = `
+                <div class="request-header">
+                    <div class="client-info">
+                        <div class="client-name">${req.clientName}</div>
+                        <div class="client-email">${req.clientEmail}</div>
+                    </div>
+                    <div class="request-meta">
+                        <div class="badge difficulty-badge">Difficulty: ${req.difficulty}/100</div>
+                        <div class="badge reward-badge">Reward: $${req.reward}</div>
+                    </div>
+                </div>
+                <div class="request-content">${req.text}</div>
+                <div class="response-area">
+                    <textarea id="responseText" placeholder="Type your response here..."></textarea>
+                </div>
+                <div class="action-buttons">
+                    <button class="deny-btn" onclick="denyRequest()">❌ DENY</button>
+                    <button onclick="submitResponse()">✅ ACCEPT & SUBMIT</button>
+                </div>
+            `;
+        }
+
+        function denyRequest() {
+            gameState.currentRequest = null;
+            gameState.averageDifficulty = Math.max(5, gameState.averageDifficulty - 2);
+            generateRequest();
+        }
+
+        async function submitResponse() {
+            const response = document.getElementById('responseText').value.trim();
+            if (!response) {
+                alert('Please write a response!');
+                return;
+            }
+
+            document.getElementById('requestContent').innerHTML = '<div class="loading">⚡ AI is evaluating your response...</div>';
+
+            const req = gameState.currentRequest;
+            const harshness = gameState.gradingHarshness;
+            
+            const prompt = `You are grading an AI company’s response to a client request.
+Company Level: ${gameState.level}
+Difficulty: ${req.difficulty}/100
+Request: ${req.text}
+Response: ${response}
+Score the response from 1–100, calibrated to difficulty and company level - The lower the difficulty, the easier you grade:
+- 90–100: Exceptional, near-perfect for the difficulty - example: 100|Directly answers the request with accurate, well-reasoned guidance and no meaningful omissions; fully appropriate for the difficulty and company level.
+- 70–89: Strong and correct, minor issues allowed - example: 80|Correct and relevant overall, but missing a small detail or clarification that would be expected at this difficulty.
+- 40–69: Partially correct or incomplete - example: 60|Addresses the general topic but only partially answers the request and leaves important aspects unclear or unaddressed.
+- 10–39: Poor, major issues - example: 30|Attempts to respond but contains significant gaps or inaccuracies and does not adequately solve the stated problem.
+- 1–9: Useless or incorrect - example: 5|Does not meaningfully address the request and provides information that is irrelevant or incorrect.
+Favor 100 for good responses - Favor 0 for terrible responses. Grade harsher past difficulty 1.
+Evaluate how well it answers the question.
+Don’t reward length.
+Don’t penalize brevity if correct.
+Adjust expectations by company level.
+Output format (REQUIRED):
+NUMBER|FEEDBACK
+ONLY WRITE THE FEEDBACK, DO NOT INCLUDE ANYTHING ELSE!
+Use the full 1–100 range when appropriate. Do not cluster scores.`;
+
+            try {
+                const apiResponse = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'AI Prompt Reversal Game'
+                    },
+                    body: JSON.stringify({
+                        model: 'mistralai/devstral-2512:free',
+                        messages: [
+                            { role: 'user', content: prompt }],
+                        temperature: 0.9,
+                        top_p: 0.95,
+                        max_tokens: 100
+                    })
+                });
+
+                const data = await apiResponse.json();
+                const result = data.choices[0].message.content.trim();
+                
+                const parts = result.split('|');
+                let rating = parseInt(parts[0].match(/\d+/)?.[0] || '50');
+                const feedback = parts[1]?.trim() || 'Response evaluated.';
+                
+                rating = Math.max(1, Math.min(100, rating));
+                rating += gameState.perks.qualityBoost;
+                rating = Math.min(100, rating);
+
+                processRating(rating, feedback);
+            } catch (error) {
+                console.error('Error evaluating response:', error);
+                const rating = 50 + Math.floor(Math.random() * 30);
+                processRating(rating, 'Response evaluated (offline mode).');
+            }
+        }
+
+        function processRating(rating, feedback) {
+            const req = gameState.currentRequest;
+            
+            // Scale rewards based on rating - poor ratings give minimal rewards
+            const ratingMultiplier = rating < 30 ? 0.1 : 
+                                    rating < 50 ? 0.3 :
+                                    rating < 70 ? 0.7 :
+                                    rating < 85 ? 1.0 : 1.3;
+            
+            const difficultyXP = req.difficulty * (1 + gameState.perks.difficultyBonus / 100) * ratingMultiplier;
+            const ratingXP = rating * ratingMultiplier;
+            const totalXP = Math.floor((difficultyXP + ratingXP) / 2);
+            
+            const earnedMoney = Math.floor(req.reward * gameState.perks.payMultiplier * ratingMultiplier);
+            
+            gameState.xp += totalXP;
+            gameState.money += earnedMoney;
+            gameState.reputation += rating;
+            gameState.totalRatings++;
+            gameState.requestsCompleted++;
+            
+            gameState.history.unshift({
+                client: req.clientName,
+                difficulty: req.difficulty,
+                rating: rating,
+                reward: earnedMoney
+            });
+            if (gameState.history.length > 5) gameState.history.pop();
+            
+            gameState.averageDifficulty = Math.min(95, gameState.averageDifficulty + 0.5);
+            gameState.gradingHarshness = Math.min(20, gameState.gradingHarshness + 0.3);
+            
+            while (gameState.xp >= gameState.xpNeeded) {
+                gameState.xp -= gameState.xpNeeded;
+                gameState.level++;
+                gameState.xpNeeded = Math.floor(100 * Math.pow(1.15, gameState.level - 1));
+            }
+            
+            updateUI();
+            
+            const performanceMsg = rating < 30 ? '❌ Poor performance - minimal rewards!' :
+                                  rating < 50 ? '⚠️ Below expectations - reduced rewards' :
+                                  rating < 70 ? '✓ Acceptable work' :
+                                  rating < 85 ? '✓✓ Good work!' :
+                                  '⭐ Excellent work! Bonus rewards!';
+            
+            document.getElementById('requestContent').innerHTML = `
+                <div class="feedback">
+                    <div class="feedback-rating">⭐ Rating: ${rating}/100</div>
+                    <div style="margin: 10px 0; color: ${rating < 50 ? '#ff8844' : '#00ff88'}">${performanceMsg}</div>
+                    <div style="margin: 10px 0;">"${feedback}"</div>
+                    <div class="xp-gain">+${totalXP} XP | +$${earnedMoney}</div>
+                    ${gameState.xp === 0 && gameState.level > 1 ? '<div style="color: #ffd700; margin-top: 10px;">🎉 LEVEL UP! 🎉</div>' : ''}
+                </div>
+                <button onclick="generateRequest()">📩 NEXT REQUEST</button>
+            `;
+        }
+
+        function renderShop() {
+            const shopHTML = shopItems.map(item => {
+                const purchased = purchasedItems.has(item.id);
+                return `
+                    <div class="shop-item">
+                        <div class="shop-item-info">
+                            <div class="shop-item-name">${item.name}</div>
+                            <div class="shop-item-desc">${item.desc}</div>
+                        </div>
+                        <button onclick="buyItem('${item.id}')" ${purchased ? 'disabled' : ''}>
+                            ${purchased ? '✓ Owned' : '$' + item.cost}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('shopItems').innerHTML = shopHTML;
+        }
+
+        function buyItem(itemId) {
+            const item = shopItems.find(i => i.id === itemId);
+            if (!item || purchasedItems.has(itemId)) return;
+            
+            if (gameState.money >= item.cost) {
+                gameState.money -= item.cost;
+                purchasedItems.add(itemId);
+                item.effect();
+                updateUI();
+                renderShop();
+            } else {
+                alert('Not enough money!');
+            }
+        }
+
+        function updateHistory() {
+            if (gameState.history.length === 0) {
+                document.getElementById('historyItems').innerHTML = '<div style="opacity: 0.5; text-align: center;">No requests completed yet</div>';
+                return;
+            }
+            
+            const historyHTML = gameState.history.map(h => `
+                <div class="history-item">
+                    <div><strong>${h.client}</strong></div>
+                    <div>Difficulty: ${h.difficulty} | <span class="history-rating">Rating: ${h.rating}/100</span></div>
+                    <div>Earned: $${h.reward}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('historyItems').innerHTML = historyHTML;
+        }
+    </script>
+</body>
+</html>
