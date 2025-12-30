@@ -17,8 +17,120 @@
             color: #00ff88;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
 
+        /* Particle effects container */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .particle {
+            position: absolute;
+            font-size: 1.5em;
+            animation: float-up 2s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-200px) scale(1.5);
+            }
+        }
+
+        /* Streak indicator */
+        .streak-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 150px;
+            text-align: center;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .streak-fire {
+            font-size: 2em;
+            animation: flicker 1s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .streak-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .streak-bonus {
+            font-size: 0.9em;
+            color: #ffed4e;
+        }
+
+        /* Achievements popup */
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            color: #0a0e27;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+            z-index: 10000;
+            text-align: center;
+            min-width: 300px;
+            animation: achieve-popup 3s forwards;
+        }
+
+        @keyframes achieve-popup {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
+            10% { transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
+            20% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            90% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0) rotate(180deg); opacity: 0; }
+        }
+
+        .achievement-icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .achievement-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 1em;
+        }
+
+        /* Setup screen */
         .setup-screen {
             display: flex;
             flex-direction: column;
@@ -36,6 +148,18 @@
             max-width: 500px;
             width: 100%;
             box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         h1 {
@@ -43,6 +167,12 @@
             margin-bottom: 30px;
             font-size: 2em;
             text-shadow: 0 0 10px #00ff88;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px #00ff88; }
+            50% { text-shadow: 0 0 20px #00ff88, 0 0 30px #00ff88; }
         }
 
         .input-group {
@@ -64,11 +194,13 @@
             color: #00ff88;
             font-family: 'Courier New', monospace;
             font-size: 1em;
+            transition: all 0.3s;
         }
 
         input:focus {
             outline: none;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+            transform: scale(1.02);
         }
 
         button {
@@ -83,11 +215,18 @@
             cursor: pointer;
             font-family: 'Courier New', monospace;
             transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
 
         button:hover {
             background: #00cc6a;
             box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         button:disabled {
@@ -96,11 +235,18 @@
             opacity: 0.5;
         }
 
+        /* Game screen */
         .game-screen {
             display: none;
             padding: 20px;
             max-width: 1400px;
             margin: 0 auto;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .header {
@@ -119,6 +265,10 @@
         .company-name {
             font-size: 1.5em;
             font-weight: bold;
+            background: linear-gradient(90deg, #00ff88, #00cc6a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .stats {
@@ -131,6 +281,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: transform 0.3s;
+        }
+
+        .stat:hover {
+            transform: scale(1.1);
         }
 
         .stat-label {
@@ -154,6 +309,11 @@
             color: #333;
             position: relative;
             display: inline-block;
+            transition: transform 0.3s;
+        }
+
+        .star:hover {
+            transform: scale(1.2) rotate(15deg);
         }
 
         .star-fill {
@@ -164,6 +324,7 @@
             color: #ffd700;
         }
 
+        /* Main content */
         .main-content {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -181,6 +342,18 @@
             border: 2px solid #00ff88;
             border-radius: 10px;
             padding: 20px;
+            animation: slideInLeft 0.5s;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .request-header {
@@ -217,6 +390,13 @@
             border-radius: 5px;
             font-size: 0.9em;
             font-weight: bold;
+            animation: bounceIn 0.5s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .difficulty-badge {
@@ -229,6 +409,17 @@
             color: #0a0e27;
         }
 
+        .special-badge {
+            background: linear-gradient(135deg, #9b59b6 0%, #e74c3c 100%);
+            color: white;
+            animation: rainbow 3s infinite;
+        }
+
+        @keyframes rainbow {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(180deg); }
+        }
+
         .request-content {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid #00ff88;
@@ -237,6 +428,11 @@
             margin: 15px 0;
             min-height: 100px;
             line-height: 1.6;
+            transition: all 0.3s;
+        }
+
+        .request-content:hover {
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
         }
 
         .response-area {
@@ -254,11 +450,13 @@
             font-family: 'Courier New', monospace;
             font-size: 1em;
             resize: vertical;
+            transition: all 0.3s;
         }
 
         textarea:focus {
             outline: none;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+            background: rgba(0, 0, 0, 0.7);
         }
 
         .action-buttons {
@@ -277,15 +475,28 @@
 
         .deny-btn:hover {
             background: #cc0000;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
         }
 
         .sidebar {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            animation: slideInRight 0.5s;
         }
 
-        .shop-area, .history-area {
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .shop-area, .history-area, .achievements-area {
             background: rgba(15, 20, 40, 0.9);
             border: 2px solid #00ff88;
             border-radius: 10px;
@@ -309,6 +520,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s;
+        }
+
+        .shop-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
         }
 
         .shop-item-info {
@@ -338,6 +555,12 @@
             padding: 10px;
             margin-bottom: 10px;
             font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            transform: translateX(5px);
+            border-color: #ffd700;
         }
 
         .history-rating {
@@ -345,10 +568,71 @@
             font-weight: bold;
         }
 
+        .achievement-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #666;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .achievement-item.unlocked {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .achievement-item:hover {
+            transform: scale(1.05);
+        }
+
+        .achievement-item-icon {
+            font-size: 2em;
+            filter: grayscale(100%);
+        }
+
+        .achievement-item.unlocked .achievement-item-icon {
+            filter: grayscale(0%);
+            animation: spin 2s ease-in-out;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .achievement-item-info {
+            flex: 1;
+        }
+
+        .achievement-item-name {
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .achievement-item.unlocked .achievement-item-name {
+            color: #ffd700;
+        }
+
+        .achievement-item-desc {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
         .loading {
             text-align: center;
             padding: 20px;
             font-size: 1.2em;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .feedback {
@@ -372,11 +656,6 @@
             font-weight: bold;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .progress-bar {
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid #00ff88;
@@ -389,27 +668,57 @@
         .progress-fill {
             background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
             height: 100%;
-            transition: width 0.3s;
+            transition: width 0.5s ease-out;
         }
 
-        .active-perks {
-            margin-top: 10px;
-            padding: 10px;
-            background: rgba(0, 255, 136, 0.1);
+        /* Timer */
+        .timer-container {
+            background: rgba(255, 68, 68, 0.2);
+            border: 2px solid #ff4444;
             border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
         }
 
-        .perk-indicator {
-            display: inline-block;
-            padding: 3px 8px;
-            background: rgba(0, 255, 136, 0.3);
-            border-radius: 3px;
-            margin: 2px;
-            font-size: 0.8em;
+        .timer-container.warning {
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Combo multiplier */
+        .combo-display {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff00ff 0%, #00ffff 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
+            z-index: 1000;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
         }
     </style>
 </head>
 <body>
+    <div id="particles"></div>
+
     <div class="setup-screen" id="setupScreen">
         <div class="setup-container">
             <h1>⚡ AI PROMPT REVERSAL ⚡</h1>
@@ -447,6 +756,9 @@
                     <div class="stat-label">REQUESTS</div>
                     <div class="stat-value" id="requestsDisplay">0</div>
                 </div>
+                <div class="stat">
+                    <button id="soundToggle" onclick="toggleSound()" style="width: auto; padding: 10px; font-size: 1.5em; cursor: pointer;">🔊</button>
+                </div>
             </div>
         </div>
 
@@ -458,6 +770,10 @@
             </div>
 
             <div class="sidebar">
+                <div class="achievements-area">
+                    <div class="section-title">🏆 ACHIEVEMENTS</div>
+                    <div id="achievementsList"></div>
+                </div>
                 <div class="shop-area">
                     <div class="section-title">🛒 SHOP</div>
                     <div id="shopItems"></div>
@@ -476,6 +792,162 @@
         // API calls now go through the backend server which securely handles the API key
         const API_URL = '/api/chat';
 
+        // Sound System using Web Audio API
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+        let soundEnabled = true;
+
+        const sounds = {
+            // Button click sound
+            click: () => {
+                if (!soundEnabled) return;
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 800;
+                gainNode.gain.value = 0.1;
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                oscillator.stop(audioCtx.currentTime + 0.1);
+            },
+
+            // Achievement unlocked sound
+            achievement: () => {
+                if (!soundEnabled) return;
+                const times = [0, 0.1, 0.2, 0.3];
+                const freqs = [523, 659, 784, 1047];
+                times.forEach((time, i) => {
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.frequency.value = freqs[i];
+                    gainNode.gain.value = 0.15;
+                    oscillator.start(audioCtx.currentTime + time);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + time + 0.15);
+                    oscillator.stop(audioCtx.currentTime + time + 0.15);
+                });
+            },
+
+            // Level up sound
+            levelUp: () => {
+                if (!soundEnabled) return;
+                [0, 0.08, 0.16, 0.24].forEach((time, i) => {
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.frequency.value = 400 + (i * 200);
+                    gainNode.gain.value = 0.2;
+                    oscillator.start(audioCtx.currentTime + time);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + time + 0.2);
+                    oscillator.stop(audioCtx.currentTime + time + 0.2);
+                });
+            },
+
+            // Coin/money earned sound
+            coin: () => {
+                if (!soundEnabled) return;
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 1000;
+                oscillator.frequency.exponentialRampToValueAtTime(1500, audioCtx.currentTime + 0.1);
+                gainNode.gain.value = 0.15;
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                oscillator.stop(audioCtx.currentTime + 0.15);
+            },
+
+            // Success/good rating sound
+            success: () => {
+                if (!soundEnabled) return;
+                [0, 0.1].forEach((time, i) => {
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.frequency.value = i === 0 ? 800 : 1200;
+                    gainNode.gain.value = 0.15;
+                    oscillator.start(audioCtx.currentTime + time);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + time + 0.2);
+                    oscillator.stop(audioCtx.currentTime + time + 0.2);
+                });
+            },
+
+            // Fail/poor rating sound
+            fail: () => {
+                if (!soundEnabled) return;
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 200;
+                oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+                gainNode.gain.value = 0.2;
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            },
+
+            // Perfect score sound
+            perfect: () => {
+                if (!soundEnabled) return;
+                [0, 0.08, 0.16, 0.24, 0.32, 0.4].forEach((time, i) => {
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.frequency.value = 600 + (i * 150);
+                    gainNode.gain.value = 0.1;
+                    oscillator.start(audioCtx.currentTime + time);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + time + 0.15);
+                    oscillator.stop(audioCtx.currentTime + time + 0.15);
+                });
+            },
+
+            // VIP/Special event sound
+            vip: () => {
+                if (!soundEnabled) return;
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 500;
+                oscillator.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+                oscillator.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.2);
+                gainNode.gain.value = 0.15;
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            },
+
+            // Shop purchase sound
+            purchase: () => {
+                if (!soundEnabled) return;
+                [0, 0.05, 0.1].forEach((time, i) => {
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.frequency.value = 1200 - (i * 200);
+                    gainNode.gain.value = 0.12;
+                    oscillator.start(audioCtx.currentTime + time);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + time + 0.1);
+                    oscillator.stop(audioCtx.currentTime + time + 0.1);
+                });
+            }
+        };
+
+        // Toggle sound function
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('soundToggle');
+            if (btn) btn.textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
         let gameState = {
             companyName: '',
             level: 1,
@@ -489,6 +961,13 @@
             gradingHarshness: 0,
             currentRequest: null,
             history: [],
+            streak: 0,
+            maxStreak: 0,
+            combo: 0,
+            achievements: {},
+            specialEventsCompleted: 0,
+            perfectScores: 0,
+            totalEarnings: 0,
             perks: {
                 qualityBoost: 0,
                 difficultyBonus: 0,
@@ -496,13 +975,27 @@
             }
         };
 
+        const achievements = [
+            { id: 'first_request', name: 'First Steps', desc: 'Complete your first request', icon: '🎯', check: () => gameState.requestsCompleted >= 1 },
+            { id: 'streak_5', name: 'Hot Streak', desc: 'Achieve a 5-request streak', icon: '🔥', check: () => gameState.maxStreak >= 5 },
+            { id: 'streak_10', name: 'On Fire!', desc: 'Achieve a 10-request streak', icon: '🌟', check: () => gameState.maxStreak >= 10 },
+            { id: 'perfect_score', name: 'Perfectionist', desc: 'Get a perfect 100/100 rating', icon: '💯', check: () => gameState.perfectScores >= 1 },
+            { id: 'millionaire', name: 'Millionaire', desc: 'Earn $1,000 total', icon: '💰', check: () => gameState.totalEarnings >= 1000 },
+            { id: 'level_5', name: 'Rising Star', desc: 'Reach level 5', icon: '⭐', check: () => gameState.level >= 5 },
+            { id: 'level_10', name: 'Expert', desc: 'Reach level 10', icon: '🏅', check: () => gameState.level >= 10 },
+            { id: 'requests_25', name: 'Dedicated', desc: 'Complete 25 requests', icon: '📝', check: () => gameState.requestsCompleted >= 25 },
+            { id: 'requests_50', name: 'Veteran', desc: 'Complete 50 requests', icon: '🎓', check: () => gameState.requestsCompleted >= 50 },
+            { id: 'special_event', name: 'VIP Client', desc: 'Complete a special event', icon: '👑', check: () => gameState.specialEventsCompleted >= 1 }
+        ];
+
         const shopItems = [
             { id: 'quality1', name: 'Rating Boost I', desc: '+5 to all ratings', cost: 500, effect: () => gameState.perks.qualityBoost += 5 },
             { id: 'quality2', name: 'Rating Boost II', desc: '+10 to all ratings', cost: 2000, effect: () => gameState.perks.qualityBoost += 10 },
             { id: 'difficulty1', name: 'Difficulty Bonus I', desc: '+10% XP from difficulty', cost: 800, effect: () => gameState.perks.difficultyBonus += 10 },
             { id: 'difficulty2', name: 'Difficulty Bonus II', desc: '+25% XP from difficulty', cost: 3000, effect: () => gameState.perks.difficultyBonus += 25 },
             { id: 'pay1', name: 'Pay Multiplier I', desc: '1.5x money earned', cost: 1000, effect: () => gameState.perks.payMultiplier *= 1.5 },
-            { id: 'pay2', name: 'Pay Multiplier II', desc: '2x money earned', cost: 4000, effect: () => gameState.perks.payMultiplier *= 2 }
+            { id: 'pay2', name: 'Pay Multiplier II', desc: '2x money earned', cost: 4000, effect: () => gameState.perks.payMultiplier *= 2 },
+            { id: 'streak1', name: 'Streak Saver', desc: 'Lose half streak instead of all', cost: 1500, effect: () => {} }
         ];
 
         let purchasedItems = new Set();
@@ -513,14 +1006,16 @@
                 alert('Please enter a company name!');
                 return;
             }
-            
+
+            sounds.click();
             gameState.companyName = companyName;
             document.getElementById('displayCompanyName').textContent = companyName;
             document.getElementById('setupScreen').style.display = 'none';
             document.getElementById('gameScreen').style.display = 'block';
-            
+
             updateUI();
             renderShop();
+            renderAchievements();
             generateRequest();
         }
 
@@ -528,18 +1023,20 @@
             document.getElementById('levelDisplay').textContent = gameState.level;
             document.getElementById('moneyDisplay').textContent = gameState.money.toFixed(0);
             document.getElementById('requestsDisplay').textContent = gameState.requestsCompleted;
-            
+
             const xpPercent = (gameState.xp / gameState.xpNeeded) * 100;
             document.getElementById('xpBar').style.width = xpPercent + '%';
-            
+
             updateStars();
             updateHistory();
+            updateStreak();
+            checkAchievements();
         }
 
         function updateStars() {
             const avgRating = gameState.totalRatings > 0 ? gameState.reputation / gameState.totalRatings : 0;
             const percent = (avgRating / 100) * 100;
-            
+
             let starsHTML = '';
             for (let i = 0; i < 5; i++) {
                 const starPercent = Math.max(0, Math.min(100, (percent - i * 20) * 5));
@@ -551,6 +1048,97 @@
                 `;
             }
             document.getElementById('starsDisplay').innerHTML = starsHTML;
+        }
+
+        function updateStreak() {
+            const existingStreak = document.querySelector('.streak-container');
+            if (gameState.streak >= 3) {
+                if (!existingStreak) {
+                    const streakDiv = document.createElement('div');
+                    streakDiv.className = 'streak-container';
+                    streakDiv.id = 'streakDisplay';
+                    document.body.appendChild(streakDiv);
+                }
+                const bonus = Math.floor(gameState.streak * 10);
+                document.getElementById('streakDisplay').innerHTML = `
+                    <div class="streak-fire">🔥</div>
+                    <div class="streak-text">${gameState.streak}x STREAK!</div>
+                    <div class="streak-bonus">+${bonus}% Bonus</div>
+                `;
+            } else if (existingStreak) {
+                existingStreak.remove();
+            }
+        }
+
+        function showCombo(multiplier) {
+            const existingCombo = document.querySelector('.combo-display');
+            if (existingCombo) existingCombo.remove();
+
+            if (multiplier > 1) {
+                const comboDiv = document.createElement('div');
+                comboDiv.className = 'combo-display';
+                comboDiv.textContent = `${multiplier}x COMBO!`;
+                document.body.appendChild(comboDiv);
+
+                setTimeout(() => comboDiv.remove(), 3000);
+            }
+        }
+
+        function createParticles(x, y, emoji, count = 5) {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emoji;
+                particle.style.left = x + (Math.random() - 0.5) * 100 + 'px';
+                particle.style.top = y + (Math.random() - 0.5) * 100 + 'px';
+                container.appendChild(particle);
+
+                setTimeout(() => particle.remove(), 2000);
+            }
+        }
+
+        function showAchievement(achievement) {
+            sounds.achievement();
+            const popup = document.createElement('div');
+            popup.className = 'achievement-popup';
+            popup.innerHTML = `
+                <div class="achievement-icon">${achievement.icon}</div>
+                <div class="achievement-title">Achievement Unlocked!</div>
+                <div class="achievement-desc">${achievement.name}</div>
+                <div style="margin-top: 10px; font-size: 0.9em;">${achievement.desc}</div>
+            `;
+            document.body.appendChild(popup);
+
+            createParticles(window.innerWidth / 2, window.innerHeight / 2, '✨', 20);
+
+            setTimeout(() => popup.remove(), 3000);
+        }
+
+        function checkAchievements() {
+            achievements.forEach(achievement => {
+                if (!gameState.achievements[achievement.id] && achievement.check()) {
+                    gameState.achievements[achievement.id] = true;
+                    showAchievement(achievement);
+                    renderAchievements();
+                }
+            });
+        }
+
+        function renderAchievements() {
+            const html = achievements.map(achievement => {
+                const unlocked = gameState.achievements[achievement.id];
+                return `
+                    <div class="achievement-item ${unlocked ? 'unlocked' : ''}">
+                        <div class="achievement-item-icon">${achievement.icon}</div>
+                        <div class="achievement-item-info">
+                            <div class="achievement-item-name">${achievement.name}</div>
+                            <div class="achievement-item-desc">${achievement.desc}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('achievementsList').innerHTML = html;
         }
 
         function generateClientName() {
@@ -569,20 +1157,24 @@
 
         async function generateRequest() {
             document.getElementById('requestContent').innerHTML = '<div class="loading">⚡ AI is generating a request for you...</div>';
-            
+
+            // Random special event (10% chance if level >= 5)
+            const isSpecialEvent = gameState.level >= 5 && Math.random() < 0.1;
+
             const difficulty = Math.min(100, Math.max(1, Math.floor(gameState.averageDifficulty + (Math.random() * 30 - 15))));
-            const reward = Math.floor(difficulty * 10 * (1 + Math.random() * 0.5));
-            
+            const baseReward = Math.floor(difficulty * 10 * (1 + Math.random() * 0.5));
+            const reward = isSpecialEvent ? baseReward * 3 : baseReward;
+
             const clientName = generateClientName();
             const clientEmail = generateEmail(clientName);
-            
-            const contextInfo = gameState.requestsCompleted > 0 
-                ? `The company has completed ${gameState.requestsCompleted} requests with an average rating of ${(gameState.reputation / gameState.totalRatings).toFixed(1)}/100. Level: ${gameState.level}.` 
+
+            const contextInfo = gameState.requestsCompleted > 0
+                ? `The company has completed ${gameState.requestsCompleted} requests with an average rating of ${(gameState.reputation / gameState.totalRatings).toFixed(1)}/100. Level: ${gameState.level}.`
                 : 'This is a new AI company just starting out.';
-            
+
             const randomSeed = Math.random().toString(36).substring(7);
-            
-            const prompt = `You are a real person named "${clientName}" (${clientEmail}) writing one short question to an AI company called "${gameState.companyName}".
+
+            let prompt = `You are a real person named "${clientName}" (${clientEmail}) writing one short question to an AI company called "${gameState.companyName}".
 
 Your request difficulty is ${difficulty}/100.
 Pick any topic that fits this difficulty - The lower the difficulty, the easier the question:
@@ -596,6 +1188,10 @@ Only write your question, leave nothing else in. Be STRAIGHT and TO THE POINT!
 
 Seed:
 ${randomSeed}`;
+
+            if (isSpecialEvent) {
+                prompt += `\n\nIMPORTANT: This is a VIP urgent request! Make it sound urgent and high-stakes.`;
+            }
 
             try {
                 const response = await fetch(API_URL, {
@@ -621,7 +1217,8 @@ ${randomSeed}`;
                     clientEmail,
                     difficulty,
                     reward,
-                    text: requestText
+                    text: requestText,
+                    isSpecialEvent
                 };
 
                 displayRequest();
@@ -638,6 +1235,11 @@ ${randomSeed}`;
 
         function displayRequest() {
             const req = gameState.currentRequest;
+            if (req.isSpecialEvent) {
+                sounds.vip();
+            }
+            const specialBadge = req.isSpecialEvent ? '<div class="badge special-badge">👑 VIP EVENT!</div>' : '';
+
             document.getElementById('requestContent').innerHTML = `
                 <div class="request-header">
                     <div class="client-info">
@@ -645,11 +1247,12 @@ ${randomSeed}`;
                         <div class="client-email">${req.clientEmail}</div>
                     </div>
                     <div class="request-meta">
+                        ${specialBadge}
                         <div class="badge difficulty-badge">Difficulty: ${req.difficulty}/100</div>
                         <div class="badge reward-badge">Reward: $${req.reward}</div>
                     </div>
                 </div>
-                <div class="request-content">${req.text}</div>
+                <div class="request-content" style="${req.isSpecialEvent ? 'border-color: #9b59b6; box-shadow: 0 0 20px rgba(155, 89, 182, 0.5);' : ''}">${req.text}</div>
                 <div class="response-area">
                     <textarea id="responseText" placeholder="Type your response here..."></textarea>
                 </div>
@@ -661,8 +1264,19 @@ ${randomSeed}`;
         }
 
         function denyRequest() {
+            sounds.click();
+            // Break streak
+            if (gameState.streak > 0) {
+                if (purchasedItems.has('streak1')) {
+                    gameState.streak = Math.floor(gameState.streak / 2);
+                } else {
+                    gameState.streak = 0;
+                }
+            }
+
             gameState.currentRequest = null;
             gameState.averageDifficulty = Math.max(5, gameState.averageDifficulty - 2);
+            updateUI();
             generateRequest();
         }
 
@@ -673,12 +1287,13 @@ ${randomSeed}`;
                 return;
             }
 
+            sounds.click();
             document.getElementById('requestContent').innerHTML = '<div class="loading">⚡ AI is evaluating your response...</div>';
 
             const req = gameState.currentRequest;
             const harshness = gameState.gradingHarshness;
-            
-            const prompt = `You are grading an AI company’s response to a client request.
+
+            const prompt = `You are grading an AI company's response to a client request.
 Company Level: ${gameState.level}
 Difficulty: ${req.difficulty}/100
 Request: ${req.text}
@@ -691,8 +1306,8 @@ Score the response from 1–100, calibrated to difficulty and company level - Th
 - 1–9: Useless or incorrect - example: 5|Does not meaningfully address the request and provides information that is irrelevant or incorrect.
 Favor 100 for good responses - Favor 0 for terrible responses. Grade harsher past difficulty 1.
 Evaluate how well it answers the question.
-Don’t reward length.
-Don’t penalize brevity if correct.
+Don't reward length.
+Don't penalize brevity if correct.
 Adjust expectations by company level.
 Output format (REQUIRED):
 NUMBER|FEEDBACK
@@ -717,11 +1332,11 @@ Use the full 1–100 range when appropriate. Do not cluster scores.`;
 
                 const data = await apiResponse.json();
                 const result = data.choices[0].message.content.trim();
-                
+
                 const parts = result.split('|');
                 let rating = parseInt(parts[0].match(/\d+/)?.[0] || '50');
                 const feedback = parts[1]?.trim() || 'Response evaluated.';
-                
+
                 rating = Math.max(1, Math.min(100, rating));
                 rating += gameState.perks.qualityBoost;
                 rating = Math.min(100, rating);
@@ -736,60 +1351,132 @@ Use the full 1–100 range when appropriate. Do not cluster scores.`;
 
         function processRating(rating, feedback) {
             const req = gameState.currentRequest;
-            
-            // Scale rewards based on rating - poor ratings give minimal rewards
-            const ratingMultiplier = rating < 30 ? 0.1 : 
+
+            // Update streak
+            if (rating >= 70) {
+                gameState.streak++;
+                if (gameState.streak > gameState.maxStreak) {
+                    gameState.maxStreak = gameState.streak;
+                }
+            } else if (rating < 50) {
+                if (purchasedItems.has('streak1')) {
+                    gameState.streak = Math.floor(gameState.streak / 2);
+                } else {
+                    gameState.streak = 0;
+                }
+            }
+
+            // Track perfect scores
+            if (rating === 100) {
+                gameState.perfectScores++;
+                sounds.perfect();
+                createParticles(window.innerWidth / 2, window.innerHeight / 2, '💯', 15);
+            } else if (rating >= 85) {
+                sounds.success();
+            } else if (rating >= 70) {
+                sounds.coin();
+            } else if (rating < 50) {
+                sounds.fail();
+            }
+
+            // Track special events
+            if (req.isSpecialEvent) {
+                gameState.specialEventsCompleted++;
+            }
+
+            // Calculate bonuses
+            const streakBonus = gameState.streak >= 3 ? 1 + (gameState.streak * 0.1) : 1;
+            const specialBonus = req.isSpecialEvent ? 1.5 : 1;
+
+            // Scale rewards based on rating
+            const ratingMultiplier = rating < 30 ? 0.1 :
                                     rating < 50 ? 0.3 :
                                     rating < 70 ? 0.7 :
                                     rating < 85 ? 1.0 : 1.3;
-            
+
             const difficultyXP = req.difficulty * (1 + gameState.perks.difficultyBonus / 100) * ratingMultiplier;
             const ratingXP = rating * ratingMultiplier;
-            const totalXP = Math.floor((difficultyXP + ratingXP) / 2);
-            
-            const earnedMoney = Math.floor(req.reward * gameState.perks.payMultiplier * ratingMultiplier);
-            
+            const baseXP = Math.floor((difficultyXP + ratingXP) / 2);
+            const totalXP = Math.floor(baseXP * streakBonus * specialBonus);
+
+            const earnedMoney = Math.floor(req.reward * gameState.perks.payMultiplier * ratingMultiplier * streakBonus * specialBonus);
+
             gameState.xp += totalXP;
             gameState.money += earnedMoney;
+            gameState.totalEarnings += earnedMoney;
             gameState.reputation += rating;
             gameState.totalRatings++;
             gameState.requestsCompleted++;
-            
+
             gameState.history.unshift({
                 client: req.clientName,
                 difficulty: req.difficulty,
                 rating: rating,
-                reward: earnedMoney
+                reward: earnedMoney,
+                isSpecial: req.isSpecialEvent
             });
             if (gameState.history.length > 5) gameState.history.pop();
-            
+
             gameState.averageDifficulty = Math.min(95, gameState.averageDifficulty + 0.5);
             gameState.gradingHarshness = Math.min(20, gameState.gradingHarshness + 0.3);
-            
+
+            // Level up
+            let levelsGained = 0;
             while (gameState.xp >= gameState.xpNeeded) {
                 gameState.xp -= gameState.xpNeeded;
                 gameState.level++;
+                levelsGained++;
                 gameState.xpNeeded = Math.floor(100 * Math.pow(1.15, gameState.level - 1));
             }
-            
+
+            if (levelsGained > 0) {
+                sounds.levelUp();
+            }
+
             updateUI();
-            
+
+            // Show combo
+            if (streakBonus > 1) {
+                showCombo(Math.floor(streakBonus * 10) / 10);
+            }
+
+            // Create particles based on rating
+            if (rating >= 90) {
+                createParticles(window.innerWidth / 2, 200, '⭐', 10);
+            } else if (rating >= 70) {
+                createParticles(window.innerWidth / 2, 200, '✨', 5);
+            }
+
             const performanceMsg = rating < 30 ? '❌ Poor performance - minimal rewards!' :
                                   rating < 50 ? '⚠️ Below expectations - reduced rewards' :
                                   rating < 70 ? '✓ Acceptable work' :
                                   rating < 85 ? '✓✓ Good work!' :
-                                  '⭐ Excellent work! Bonus rewards!';
-            
+                                  rating < 100 ? '⭐ Excellent work! Bonus rewards!' :
+                                  '💯 PERFECT SCORE! Maximum rewards!';
+
+            let bonusText = '';
+            if (streakBonus > 1) {
+                bonusText += `<div style="color: #ffd700; margin: 5px 0;">🔥 Streak Bonus: +${Math.floor((streakBonus - 1) * 100)}%</div>`;
+            }
+            if (req.isSpecialEvent) {
+                bonusText += `<div style="color: #9b59b6; margin: 5px 0;">👑 VIP Event Bonus: +50%</div>`;
+            }
+
             document.getElementById('requestContent').innerHTML = `
                 <div class="feedback">
                     <div class="feedback-rating">⭐ Rating: ${rating}/100</div>
                     <div style="margin: 10px 0; color: ${rating < 50 ? '#ff8844' : '#00ff88'}">${performanceMsg}</div>
+                    ${bonusText}
                     <div style="margin: 10px 0;">"${feedback}"</div>
                     <div class="xp-gain">+${totalXP} XP | +$${earnedMoney}</div>
-                    ${gameState.xp === 0 && gameState.level > 1 ? '<div style="color: #ffd700; margin-top: 10px;">🎉 LEVEL UP! 🎉</div>' : ''}
+                    ${levelsGained > 0 ? `<div style="color: #ffd700; margin-top: 10px; font-size: 1.3em;">🎉 LEVEL UP! Now level ${gameState.level}! 🎉</div>` : ''}
                 </div>
                 <button onclick="generateRequest()">📩 NEXT REQUEST</button>
             `;
+
+            if (levelsGained > 0) {
+                createParticles(window.innerWidth / 2, window.innerHeight / 2, '🎉', 20);
+            }
         }
 
         function renderShop() {
@@ -813,14 +1500,17 @@ Use the full 1–100 range when appropriate. Do not cluster scores.`;
         function buyItem(itemId) {
             const item = shopItems.find(i => i.id === itemId);
             if (!item || purchasedItems.has(itemId)) return;
-            
+
             if (gameState.money >= item.cost) {
+                sounds.purchase();
                 gameState.money -= item.cost;
                 purchasedItems.add(itemId);
                 item.effect();
+                createParticles(window.innerWidth / 2, window.innerHeight / 2, '💰', 10);
                 updateUI();
                 renderShop();
             } else {
+                sounds.fail();
                 alert('Not enough money!');
             }
         }
@@ -830,15 +1520,15 @@ Use the full 1–100 range when appropriate. Do not cluster scores.`;
                 document.getElementById('historyItems').innerHTML = '<div style="opacity: 0.5; text-align: center;">No requests completed yet</div>';
                 return;
             }
-            
+
             const historyHTML = gameState.history.map(h => `
-                <div class="history-item">
-                    <div><strong>${h.client}</strong></div>
+                <div class="history-item" style="${h.isSpecial ? 'border-color: #9b59b6;' : ''}">
+                    <div><strong>${h.client}</strong> ${h.isSpecial ? '👑' : ''}</div>
                     <div>Difficulty: ${h.difficulty} | <span class="history-rating">Rating: ${h.rating}/100</span></div>
                     <div>Earned: $${h.reward}</div>
                 </div>
             `).join('');
-            
+
             document.getElementById('historyItems').innerHTML = historyHTML;
         }
     </script>

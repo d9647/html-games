@@ -11,6 +11,11 @@ An interactive browser game where you run an AI company and respond to client re
 - Shop system to purchase upgrades
 - Level progression and reputation system
 - Real-time grading and feedback
+- 10 unlockable achievements with celebration animations
+- Streak system with bonus multipliers
+- Random VIP special events for extra rewards
+- Particle effects and smooth animations
+- Retro-style sound effects (toggle with 🔊 button)
 
 ## How to Deploy on Replit
 
