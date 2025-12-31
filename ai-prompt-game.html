@@ -721,13 +721,25 @@
 
     <div class="setup-screen" id="setupScreen">
         <div class="setup-container">
-            <h1>⚡ AI PROMPT REVERSAL ⚡</h1>
+            <h1>AI PROMPT REVERSAL</h1>
             <p style="text-align: center; margin-bottom: 30px; opacity: 0.8;">
                 The tables have turned. AI will prompt YOU.
             </p>
             <div class="input-group">
                 <label for="companyName">Enter Your AI Company Name:</label>
                 <input type="text" id="companyName" placeholder="e.g., NeuroTech Solutions" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="topicSelect">Choose Question Topic:</label>
+                <select id="topicSelect" style="width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.5); border: 1px solid #00ff88; border-radius: 5px; color: #00ff88; font-family: 'Courier New', monospace; font-size: 1em;">
+                    <option value="all">All Topics (Random)</option>
+                    <option value="math">Math</option>
+                    <option value="science">Science</option>
+                    <option value="everyday">Everyday Stuff</option>
+                    <option value="technology">Technology</option>
+                    <option value="history">History</option>
+                    <option value="art">Art & Creativity</option>
+                </select>
             </div>
             <button onclick="startGame()">START GAME</button>
         </div>
@@ -950,6 +962,7 @@
 
         let gameState = {
             companyName: '',
+            selectedTopic: 'all',
             level: 1,
             xp: 0,
             xpNeeded: 100,
@@ -961,6 +974,7 @@
             gradingHarshness: 0,
             currentRequest: null,
             history: [],
+            askedQuestions: [], // Track previously asked questions
             streak: 0,
             maxStreak: 0,
             combo: 0,
@@ -1007,8 +1021,11 @@
                 return;
             }
 
+            const selectedTopic = document.getElementById('topicSelect').value;
+
             sounds.click();
             gameState.companyName = companyName;
+            gameState.selectedTopic = selectedTopic;
             document.getElementById('displayCompanyName').textContent = companyName;
             document.getElementById('setupScreen').style.display = 'none';
             document.getElementById('gameScreen').style.display = 'block';
@@ -1174,23 +1191,46 @@
 
             const randomSeed = Math.random().toString(36).substring(7);
 
-            let prompt = `You are a real person named "${clientName}" (${clientEmail}) writing one short question to an AI company called "${gameState.companyName}".
+            // Define topic-specific instructions
+            const topicInstructions = {
+                'math': 'Ask a math question (arithmetic, algebra, geometry, calculus, statistics, etc.)',
+                'science': 'Ask a science question (physics, chemistry, biology, astronomy, earth science, etc.)',
+                'everyday': 'Ask about everyday life topics (cooking, shopping, relationships, common problems, practical advice, etc.)',
+                'technology': 'Ask about technology (programming, gadgets, software, internet, computers, etc.)',
+                'history': 'Ask about historical events, figures, or periods',
+                'art': 'Ask about art, music, literature, or creative topics',
+                'all': 'Pick ANY random topic that interests you (math, science, everyday life, technology, history, art, trivia, general knowledge, etc.)'
+            };
 
-Your request difficulty is ${difficulty}/100.
-Pick any topic that fits this difficulty - The lower the difficulty, the easier the question:
+            const topicInstruction = topicInstructions[gameState.selectedTopic] || topicInstructions['all'];
+
+            // Build the previously asked questions context
+            let previousQuestionsText = '';
+            if (gameState.askedQuestions.length > 0) {
+                previousQuestionsText = `\n\nPREVIOUSLY ASKED QUESTIONS (DO NOT REPEAT ANY OF THESE):\n${gameState.askedQuestions.slice(-20).map((q, i) => `${i + 1}. ${q}`).join('\n')}`;
+            }
+
+            let prompt = `You are a real person named "${clientName}" sending "${gameState.companyName}" a request.
+
+Your request difficulty is ${difficulty}/100 - The lower the difficulty, the simpler and more straightforward the question should be.
+
+Topic: ${topicInstruction}
 
 Rules:
-- One short question only
-- Sound human (rushed and slightly misspelled - no special characters, only basic punctuation)
-- Be specific about the problem or goal
-- Keep it appropriate and nice
+- Short question only - THE SHORTER THE BETTER
+- Sound like a realistic question (somewhat formal, casual, natural tone - might be rushed and sometimes mispelled)
+- Be specific about what you want to know
+- DO NOT mention the AI company name
+- Ask your question directly
+- CRITICAL: DO NOT repeat any previously asked questions - ask something completely different!
 Only write your question, leave nothing else in. Be STRAIGHT and TO THE POINT!
+${previousQuestionsText}
 
 Seed:
 ${randomSeed}`;
 
             if (isSpecialEvent) {
-                prompt += `\n\nIMPORTANT: This is a VIP urgent request! Make it sound urgent and high-stakes.`;
+                prompt += `\n\nIMPORTANT: This is a VIP urgent request! Make it sound urgent and important.`;
             }
 
             try {
@@ -1211,6 +1251,13 @@ ${randomSeed}`;
 
                 const data = await response.json();
                 const requestText = data.choices[0].message.content.trim();
+
+                // Store the question in the asked questions list
+                gameState.askedQuestions.push(requestText);
+                // Keep only the last 50 questions to prevent memory bloat
+                if (gameState.askedQuestions.length > 50) {
+                    gameState.askedQuestions.shift();
+                }
 
                 gameState.currentRequest = {
                     clientName,
